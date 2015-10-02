@@ -1,0 +1,85 @@
+<html>
+<head>
+    <link href="./jquery-ui/jquery-ui.css" type="text/css" rel="stylesheet/less">
+    <link rel="stylesheet" type="text/css"
+href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+<script type="text/javascript" src="./jquery-ui/jquery-ui.js"></script>
+<style media="screen">
+.imageBox{
+  width: 800px;
+height: 400px;
+}
+.cropingBlock{
+  min-width:200px;
+  min-height: 200px;
+  display: block;
+  border: 1px dashed;
+  position: absolute;
+}
+.imageBox img{
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+}
+.canvasDiv{
+  display: inline-block;
+}
+</style>
+</head>
+<body>
+  <div class="imageBox">
+  <img id="img"/>
+  <div class="cropingBlock resizeable draggable"></div>
+</div>
+<div class="canvasDiv"><canvas width="800" height="400" id="canvas"></canvas></div>
+
+  <input type="file" id="input"/>
+
+  <button onclick="canvasdraw()"> Cropp</button>
+<script type="text/javascript">
+
+$(".resizeable").resizable({
+    containment: ".imageBox"
+});
+
+
+$(".draggable").draggable({
+    cursor: "crosshair",
+    containment: ".imageBox",
+});
+var input = document.getElementById('input');
+function readURL(input) {
+
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#img').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+$("#input").change(function(){
+    readURL(this);
+});
+
+input.addEventListener('change', handleFiles);
+ function canvasdraw  () {
+
+    var c=document.getElementById("canvas");
+    var ctx=c.getContext("2d");
+    var img=document.getElementById("img");
+    var diff = img.naturalWidth/img.width;
+    var left = $('.draggable').offset().left*(img.naturalWidth/img.width);
+    var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
+    console.log($(".resizeable").width());
+    ctx.drawImage(img,left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff, 0, 0, 500, 500);
+}
+
+</script>
+</body>
+
+</html>
