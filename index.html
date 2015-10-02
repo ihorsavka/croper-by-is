@@ -34,9 +34,11 @@ height: 400px;
 </div>
 <div class="canvasDiv"><canvas width="800" height="400" id="canvas"></canvas></div>
 
-  <input type="file" id="input"/>
+  <input type="file" id="input"></input>
+  <input type="file" name="First Name" id="hidden"></input>
 
   <button onclick="canvasdraw()"> Cropp</button>
+
 <script type="text/javascript">
 
 $(".resizeable").resizable({
@@ -77,6 +79,10 @@ input.addEventListener('change', handleFiles);
     var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
     console.log($(".resizeable").width());
     ctx.drawImage(img,left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff, 0, 0, 500, 500);
+    var hinput = $('input[name="First Name"]');
+    hinput.val($(img).attr('src'));
+    console.log(hinput.val());
+
 }
 
 </script>
