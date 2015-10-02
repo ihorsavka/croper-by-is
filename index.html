@@ -78,7 +78,7 @@ input.addEventListener('change', handleFiles);
     var left = $('.draggable').offset().left*(img.naturalWidth/img.width);
     var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
     console.log($(".resizeable").width());
-    ctx.drawImage(img,left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff, 0, 0, 500, 500);
+    ctx.drawImage(img,left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff, 0, 0, $(".resizeable").width(), $(".resizeable").height());
     var hinput = $('input[name="First Name"]');
     hinput.val($(img).attr('src'));
     console.log(hinput.val());
