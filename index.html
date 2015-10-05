@@ -40,7 +40,9 @@ height: 400px;
   <button onclick="canvasdraw()"> Cropp</button>
   <div>
     <button onclick="rotate()">rotate canvas</button>
+    <button onclick="grayscale()">Grayscale the image</button>
 </div>
+<input type="range" min="0" max="360" value="0" step="15" onchange="showValue(this.value)" />
 
 <script type="text/javascript">
 var c=document.getElementById("canvas");
@@ -100,6 +102,36 @@ function rotate(){
   ctx.translate($(".resizeable").width(),0 );
   ctx.rotate(90*Math.PI/180);
   ctx.drawImage(img,$('.draggable').offset().left*(img.naturalWidth/img.width), $('.draggable').offset().top*(img.naturalHeight/img.height),$(".resizeable").height()*(img.naturalWidth/img.width), $(".resizeable").width()*(img.naturalWidth/img.width), 0, 0, $(".resizeable").width(), $(".resizeable").height());
+}
+
+function grayscale(){
+  console.log('new')
+  Filters = {};
+  Filters.getCanvas = function(w,h) {
+    var c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    return c;
+  };
+  Filters.brightness = function(pixels, adjustment) {
+  var d = pixels.data;
+  for (var i=0; i<d.length; i+=4) {
+    d[i] += adjustment;
+    d[i+1] += adjustment;
+    d[i+2] += adjustment;
+  }
+  return pixels;
+};
+}
+function showValue(newValue){
+  console.log(newValue);
+  c.width = $('.draggable').offset().left*(img.naturalWidth/img.width);
+  c.height = $('.draggable').offset().left*(img.naturalWidth/img.width);
+
+  ctx.translate(($('.draggable').offset().left*(img.naturalWidth/img.width))/2,($('.draggable').offset().left*(img.naturalWidth/img.width))/2);
+  ctx.rotate(newValue*Math.PI/180);
+  ctx.clearRect(0,0,10000,10000);
+  ctx.drawImage(img,-($('.draggable').offset().left*(img.naturalWidth/img.width))/2, -($('.draggable').offset().top*(img.naturalHeight/img.height))/2);
 }
 
 
