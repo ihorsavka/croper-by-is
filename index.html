@@ -38,8 +38,14 @@ height: 400px;
   <input type="file" name="First Name" id="hidden"></input>
 
   <button onclick="canvasdraw()"> Cropp</button>
+  <div>
+    <button onclick="rotate()">rotate canvas</button>
+</div>
 
 <script type="text/javascript">
+var c=document.getElementById("canvas");
+var ctx=c.getContext("2d");
+var img=document.getElementById("img");
 
 $(".resizeable").resizable({
     containment: ".imageBox"
@@ -71,19 +77,32 @@ $("#input").change(function(){
 input.addEventListener('change', handleFiles);
  function canvasdraw  () {
 
-    var c=document.getElementById("canvas");
-    var ctx=c.getContext("2d");
-    var img=document.getElementById("img");
+
     var diff = img.naturalWidth/img.width;
     var left = $('.draggable').offset().left*(img.naturalWidth/img.width);
     var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
     console.log($(".resizeable").width());
+
+ctx.save();
+    ctx.clearRect(0, 0, 0, 0);
+    ctx.restore();
+
+
     ctx.drawImage(img,left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff, 0, 0, $(".resizeable").width(), $(".resizeable").height());
     var hinput = $('input[name="First Name"]');
     hinput.val($(img).attr('src'));
-    console.log(hinput.val());
+
+
 
 }
+function rotate(){
+  console.log('rotate');
+  ctx.translate($(".resizeable").width(),0 );
+  ctx.rotate(90*Math.PI/180);
+  ctx.drawImage(img,$('.draggable').offset().left*(img.naturalWidth/img.width), $('.draggable').offset().top*(img.naturalHeight/img.height),$(".resizeable").height()*(img.naturalWidth/img.width), $(".resizeable").width()*(img.naturalWidth/img.width), 0, 0, $(".resizeable").width(), $(".resizeable").height());
+}
+
+
 
 </script>
 </body>
