@@ -18,16 +18,25 @@ height: 400px;
   position: absolute;
 }
 .imageBox img{
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+max-height: 100%;
   display: inline-block;
 }
 .canvasDiv{
   display: inline-block;
 }
+.menu{
+  display: none;
+}
 </style>
 </head>
 <body>
+  <section class="menu">
+    <button onclick="openCroper()">Croper</button>
+    <button onclick="openRotate()"> Rotate</button>
+    <button onclick="openEdit()"> Edit</button>
+
+  </section>
   <div class="imageBox">
   <img id="img"/>
   <div class="cropingBlock resizeable draggable"></div>
@@ -37,38 +46,53 @@ height: 400px;
   <input type="file" id="input"></input>
   <input type="file" name="First Name" id="hidden"></input>
 
-  <button onclick="canvasdraw()"> Cropp</button>
-  <div>
+  <button class='crop' onclick="canvasdraw()"> Cropp</button>
+  <div class='rotate'>
     <button onclick="rotate()">rotate canvas</button>
-    <button onclick="grayscale()">Grayscale the image</button>
-    <button onclick="invert()">Invert image</button>
-    <button onclick="saturate()">saturate image</button>
+    <!-- <button onclick="resizeClicked()">newRotate()</button> -->
+    <input type="range" min="0" max="360" value="0" step="15" onchange="showValue(this.value)" />
+
 </div>
-<input type="range" min="0" max="360" value="0" step="15" onchange="showValue(this.value)" />
-<h4>Saturation</h4>
-<input type="range" min="0" max="4" value="0" step="1" onchange="showSaturat(this.value)" />
-<span style="background:black;">
-  <input type="button" onclick="brightness(10)" value="Lighter" />brightness(amount)<br />
-18
+
+
+<div class='edit'>
+              <input type="button" onclick="brightness(10)" value="Lighter" /><br />
+
 	            <input type="button" onclick="brightness(-10)" value="Darker" /><br />
-19
-	            Red: <input type="button" onclick="contrast(10)" value="More" />
-20
+
+	             <input type="button" onclick="contrast(10)" value="More" />
+
 	            <input type="button" onclick="contrast(-10)" value="Less" /><br />
-21
-	            Green: <input type="button" onclick="changeColorValue('eg', 10)" value="More" />
-22
-	            <input type="button" onclick="changeColorValue('eg', -10)" value="Less" /><br />
-23
-	            Blue: <input type="button" onclick="changeColorValue('eb', 10)" value="More" />
-24
-	            <input type="button" onclick="changeColorValue('eb', -10)" value="Less" />
-</span>
+              <button onclick="grayscale()">Grayscale the image</button>
+              <button onclick="invert()">Invert image</button>
+              <button onclick="saturate()">saturate image</button>
+</div>
+<button type="button" onclick="save()" name="Save">Save</button>
 
 <script type="text/javascript">
+
 var c=document.getElementById("canvas");
 var ctx=c.getContext("2d");
 var img=document.getElementById("img");
+var imgWidth = 200;
+var imgHeight = 300;
+var size = {
+    width: imgWidth,
+    height: imgHeight
+};
+var rotation = 0;
+var deg2Rad = Math.PI / 180;
+var count1 = 0;
+var count2 = 0;
+function fade(){
+  $('canvas').fadeOut();
+  $('.crop').fadeOut();
+  $('.cropingBlock').fadeOut();
+  $('.edit').fadeOut();
+  $('.rotate').fadeOut();
+}
+fade();
+
 
 $(".resizeable").resizable({
     containment: ".imageBox"
@@ -79,7 +103,37 @@ $(".draggable").draggable({
     cursor: "crosshair",
     containment: ".imageBox",
 });
+
 var input = document.getElementById('input');
+function save(){
+  $('#img').attr('src',c.toDataURL('image/jpeg') );
+  fade();
+}
+function openCroper(){
+  fade();
+  $('canvas').fadeIn();
+  $('.crop').fadeIn();
+  $('.cropingBlock').fadeIn();
+
+}
+function openRotate(){
+  fade();
+  $('canvas').fadeIn();
+  $('.rotate').fadeIn();
+  c.width = img.width;
+  c.height =  img.height;
+  ctx.drawImage(img,0,0,img.width,img.height);
+
+}
+function openEdit(){
+  fade();
+  $('canvas').fadeIn();
+  $('.edit').fadeIn();
+  c.width = img.width;
+  c.height =  img.height;
+  ctx.drawImage(img,0,0,img.width,img.height);
+
+}
 function readURL(input) {
 
     if (input.files && input.files[0]) {
@@ -95,19 +149,21 @@ function readURL(input) {
 
 $("#input").change(function(){
     readURL(this);
+    $('.menu').fadeIn();
 });
 
 input.addEventListener('change', handleFiles);
  function canvasdraw  () {
 
-
+    c.width = $(".resizeable").width();
+    c.height =  $(".resizeable").width();
     var diff = img.naturalWidth/img.width;
     var left = $('.draggable').offset().left*(img.naturalWidth/img.width);
     var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
     console.log($(".resizeable").width());
 
 ctx.save();
-    ctx.clearRect(0, 0, 0, 0);
+    ctx.clearRect(left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff);
     ctx.restore();
 
 
@@ -120,9 +176,15 @@ ctx.save();
 }
 function rotate(){
   console.log('rotate');
-  ctx.translate($(".resizeable").width(),0 );
+  var imgDiffWidth = (img.naturalWidth/(img.naturalWidth/img.width));
+  var imgDiffHeight = (img.naturalHeight/(img.naturalHeight/img.height));
+  console.log(imgDiffWidth);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
   ctx.rotate(90*Math.PI/180);
-  ctx.drawImage(img,($('.draggable').offset().left*(img.naturalWidth/img.width))/2, ($('.draggable').offset().top*(img.naturalHeight/img.height))/2,$(".resizeable").height()*(img.naturalWidth/img.width), $(".resizeable").width()*(img.naturalWidth/img.width), 0, 0, $(".resizeable").width(), $(".resizeable").height());
+    $('#img').attr('src',c.toDataURL('image/jpeg') );
+
+  ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
 }
 function saturate(){
   var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -198,13 +260,14 @@ function invert(){
 
 function showValue(newValue){
   console.log(newValue);
-  c.width = $(".resizeable").width();
-  c.height = $(".resizeable").width();
-
-  ctx.translate(($(".resizeable").width())/2,($(".resizeable").width())/2);
+  var imgDiffWidth = (img.naturalWidth/(img.naturalWidth/img.width));
+  var imgDiffHeight = (img.naturalHeight/(img.naturalHeight/img.height));
+  console.log(imgDiffWidth);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
   ctx.rotate(newValue*Math.PI/180);
-  ctx.clearRect(0,0,10000,10000);
-  ctx.drawImage(img,-($(".resizeable").width())/2, -($(".resizeable").width())/2);
+    ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
+      $('#img').attr('src',c.toDataURL('image/jpeg') );
 }
 function changeColorValue(sobj, val){
 
@@ -212,47 +275,79 @@ function changeColorValue(sobj, val){
 
 /////FUNCTIONALYTI
 
-function brightness(amount){
-	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
-	var pixels = data.data;
-	for(var i = 0; i < pixels.length; i+=4){//loop through all data
-		/*
-		pixels[i] is the red component
-		pixels[i+1] is the green component
-		pixels[i+2] is the blue component
-		pixels[i+3] is the alpha component
-		*/
-		pixels[i] += amount;
-		pixels[i+1] += amount;
-		pixels[i+2] += amount;
-	}
-	data.data = pixels;
-	ctx.putImageData(data,0,0);//put the image data back
-}
-function contrast(amount){
-	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
-	var pixels = data.data;
-	for(var i = 0; i < pixels.length; i+=4){//loop through all data
-		/*
-		pixels[i] is the red component
-		pixels[i+1] is the green component
-		pixels[i+2] is the blue component
-		pixels[i+3] is the alpha component
-		*/
-		var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
-
-		pixels[i] += brightness > 127 ? amount : -amount;
-		pixels[i+1] += brightness > 127 ? amount : -amount;
-		pixels[i+2] += brightness > 127 ? amount : -amount;
-	}
-	data.data = pixels;
-	ctx.putImageData(data,0,0);//put the image data back
-}
-
-
-
-
-
+// function brightness(amount){
+// 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+// 	var pixels = data.data;
+// 	for(var i = 0; i < pixels.length; i+=4){//loop through all data
+// 		/*
+// 		pixels[i] is the red component
+// 		pixels[i+1] is the green component
+// 		pixels[i+2] is the blue component
+// 		pixels[i+3] is the alpha component
+// 		*/
+// 		pixels[i] += amount;
+// 		pixels[i+1] += amount;
+// 		pixels[i+2] += amount;
+// 	}
+// 	data.data = pixels;
+// 	ctx.putImageData(data,0,0);//put the image data back
+// }
+// function contrast(amount){
+// 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+// 	var pixels = data.data;
+// 	for(var i = 0; i < pixels.length; i+=4){//loop through all data
+// 		/*
+// 		pixels[i] is the red component
+// 		pixels[i+1] is the green component
+// 		pixels[i+2] is the blue component
+// 		pixels[i+3] is the alpha component
+// 		*/
+// 		var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
+//
+// 		pixels[i] += brightness > 127 ? amount : -amount;
+// 		pixels[i+1] += brightness > 127 ? amount : -amount;
+// 		pixels[i+2] += brightness > 127 ? amount : -amount;
+// 	}
+// 	data.data = pixels;
+// 	ctx.putImageData(data,0,0);//put the image data back
+// }
+// ///rotate
+//
+//
+// function draw(){
+//
+// canvas.width = img.naturalWidth;
+//     canvas.height = img.naturalHeight;
+//
+//     // calculate the centerpoint of the canvas
+//     var cx = canvas.width / 2;
+//     var cy = canvas.height / 2;
+//
+//
+//     // draw the rect in the center of the newly sized canvas
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     ctx.fillStyle = "rgba(216,216,150,1.0)";
+//     ctx.translate(cx, cy);
+//     ctx.rotate(rotation * deg2Rad);
+//     ctx.drawImage(img, -imgWidth / 2, -imgHeight / 2);
+//
+//
+// }
+// function resizeClicked(e) {
+//   var imgWidth = img.naturalWidth;
+//   var imgHeight = img.naturalHeight;
+//     rotation += 30;
+//     newSize(imgWidth, imgHeight, rotation);
+//     draw();
+// }
+//
+// function newSize(w, h, a) {
+//     var rads = a * Math.PI / 180;
+//     var c = Math.abs(Math.cos(rads));
+//     var s = Math.abs(Math.sin(rads));
+//     size.width = h * s + w * c;
+//     size.height = h * c + w * s;
+// }
 </script>
 </body>
 
