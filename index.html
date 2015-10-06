@@ -47,6 +47,23 @@ height: 400px;
 <input type="range" min="0" max="360" value="0" step="15" onchange="showValue(this.value)" />
 <h4>Saturation</h4>
 <input type="range" min="0" max="4" value="0" step="1" onchange="showSaturat(this.value)" />
+<span style="background:black;">
+  <input type="button" onclick="brightness(10)" value="Lighter" />brightness(amount)<br />
+18
+	            <input type="button" onclick="brightness(-10)" value="Darker" /><br />
+19
+	            Red: <input type="button" onclick="contrast(10)" value="More" />
+20
+	            <input type="button" onclick="contrast(-10)" value="Less" /><br />
+21
+	            Green: <input type="button" onclick="changeColorValue('eg', 10)" value="More" />
+22
+	            <input type="button" onclick="changeColorValue('eg', -10)" value="Less" /><br />
+23
+	            Blue: <input type="button" onclick="changeColorValue('eb', 10)" value="More" />
+24
+	            <input type="button" onclick="changeColorValue('eb', -10)" value="Less" />
+</span>
 
 <script type="text/javascript">
 var c=document.getElementById("canvas");
@@ -189,6 +206,50 @@ function showValue(newValue){
   ctx.clearRect(0,0,10000,10000);
   ctx.drawImage(img,-($(".resizeable").width())/2, -($(".resizeable").width())/2);
 }
+function changeColorValue(sobj, val){
+
+}
+
+/////FUNCTIONALYTI
+
+function brightness(amount){
+	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+	var pixels = data.data;
+	for(var i = 0; i < pixels.length; i+=4){//loop through all data
+		/*
+		pixels[i] is the red component
+		pixels[i+1] is the green component
+		pixels[i+2] is the blue component
+		pixels[i+3] is the alpha component
+		*/
+		pixels[i] += amount;
+		pixels[i+1] += amount;
+		pixels[i+2] += amount;
+	}
+	data.data = pixels;
+	ctx.putImageData(data,0,0);//put the image data back
+}
+function contrast(amount){
+	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+	var pixels = data.data;
+	for(var i = 0; i < pixels.length; i+=4){//loop through all data
+		/*
+		pixels[i] is the red component
+		pixels[i+1] is the green component
+		pixels[i+2] is the blue component
+		pixels[i+3] is the alpha component
+		*/
+		var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
+
+		pixels[i] += brightness > 127 ? amount : -amount;
+		pixels[i+1] += brightness > 127 ? amount : -amount;
+		pixels[i+2] += brightness > 127 ? amount : -amount;
+	}
+	data.data = pixels;
+	ctx.putImageData(data,0,0);//put the image data back
+}
+
+
 
 
 
