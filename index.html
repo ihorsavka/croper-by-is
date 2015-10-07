@@ -39,9 +39,10 @@ max-height: 100%;
   </section>
   <div class="imageBox">
   <img id="img"/>
+  <img id="previw"/>
   <div class="cropingBlock resizeable draggable"></div>
 </div>
-<div class="canvasDiv"><canvas width="800" height="400" id="canvas"></canvas></div>
+<div class="canvasDiv"><canvas width="800"  style="visibility:hiden;"height="400" id="canvas"></canvas></div>
 
   <input type="file" id="input"></input>
   <input type="file" name="First Name" id="hidden"></input>
@@ -49,8 +50,15 @@ max-height: 100%;
   <button class='crop' onclick="canvasdraw()"> Cropp</button>
   <div class='rotate'>
     <button onclick="rotate()">rotate canvas</button>
+    <button onclick="flip()">flip canvas</button>
     <!-- <button onclick="resizeClicked()">newRotate()</button> -->
-    <input type="range" min="0" max="360" value="0" step="15" oninput="showValue(this.value)" onchange="showValue(this.value)" />
+    <input type="range" min="-360" max="360" value="0" step="15" oninput="showValue(this.value)" onchange="showValue(this.value)" />
+
+</div>
+<div class='resize'>
+
+  <!-- <button onclick="resizeClicked()">newRotate()</button> -->
+  <input type="range" min="0" max="360" value="0" step="15" oninput="resize(this.value)" onchange="resize(this.value)" />
 
 </div>
 
@@ -66,6 +74,7 @@ max-height: 100%;
               <button onclick="grayscale()">Grayscale the image</button>
               <button onclick="invert()">Invert image</button>
               <button onclick="saturate()">saturate image</button>
+              <button onclick="bluer()">bluer image</button>
 </div>
 <button type="button" onclick="save()" name="Save">Save</button>
 
@@ -84,6 +93,9 @@ var rotation = 0;
 var deg2Rad = Math.PI / 180;
 var count1 = 0;
 var count2 = 0;
+/////function for fading in
+
+
 function fade(){
   $('canvas').fadeOut();
   $('.crop').fadeOut();
@@ -93,6 +105,7 @@ function fade(){
 }
 fade();
 
+/////Functions for croping zone
 
 $(".resizeable").resizable({
     containment: ".imageBox"
@@ -104,36 +117,54 @@ $(".draggable").draggable({
     containment: ".imageBox",
 });
 
+//////canvas Functions
+
+
 var input = document.getElementById('input');
 function save(){
   $('#img').attr('src',c.toDataURL('image/jpeg') );
+
   fade();
 }
+
+
+////opening croper
 function openCroper(){
   fade();
-  $('canvas').fadeIn();
+  // $('canvas').fadeIn();
   $('.crop').fadeIn();
   $('.cropingBlock').fadeIn();
 
 }
+
+///opening rotations
+
 function openRotate(){
   fade();
-  $('canvas').fadeIn();
+  // $('canvas').fadeIn();
   $('.rotate').fadeIn();
-  c.width = img.width;
-  c.height =  img.height;
-  ctx.drawImage(img,0,0,img.width,img.height);
+  c.width = img.naturalWidth;
+  c.height =  img.naturalHeight;
+  ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight);
 
 }
+
+////opening editing block
+
 function openEdit(){
   fade();
-  $('canvas').fadeIn();
+  // $('canvas').fadeIn();
   $('.edit').fadeIn();
-  c.width = img.width;
-  c.height =  img.height;
-  ctx.drawImage(img,0,0,img.width,img.height);
+  c.width = img.naturalWidth;
+  c.height =  img.naturalHeight;
+  ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight);
 
 }
+
+
+/////reading url from the input
+
+
 function readURL(input) {
 
     if (input.files && input.files[0]) {
@@ -153,11 +184,15 @@ $("#input").change(function(){
 });
 
 input.addEventListener('change', handleFiles);
+
+
+////croping
  function canvasdraw  () {
 
-    c.width = $(".resizeable").width();
-    c.height =  $(".resizeable").height();
+
     var diff = img.naturalWidth/img.width;
+    c.width = $(".resizeable").width()*diff;
+    c.height =  $(".resizeable").height()*diff;;
     var left = $('.draggable').offset().left*(img.naturalWidth/img.width);
     var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
 
@@ -167,9 +202,28 @@ ctx.save();
     ctx.restore();
 
 
-    ctx.drawImage(img,left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff, 0, 0, $(".resizeable").width(), $(".resizeable").height());
-    var hinput = $('input[name="First Name"]');
-    hinput.val($(img).attr('src'));
+    ctx.drawImage(img,left,top,c.width, c.height, 0, 0, c.width, c.height);
+    $('#previw').attr('src',c.toDataURL('image/jpeg') );
+
+
+
+}
+ function resize(value) {
+
+var sizeDiff = img.width/c.width;
+c.width = img.naturalWidth + (parseInt(value)*sizeDiff);
+c.height =  img.naturalHeight + parseInt(value);
+
+
+ctx.save();
+    ctx.clearRect(0,0,c.width, c.height);
+    ctx.restore();
+
+
+    ctx.drawImage(img,0,0,img.naturalWidth, img.naturalHeight, 0, 0,   c.width,c.height);
+    $('#previw').attr('src',c.toDataURL('image/jpeg') );
+
+
 
 
 
@@ -187,8 +241,8 @@ function rotate(){
   }
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  var imgDiffWidth = img.width;
-  var imgDiffHeight = img.height;
+  var imgDiffWidth = img.naturalWidth;
+  var imgDiffHeight = img.naturalHeight;
   ctx.save();
   ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
   ctx.rotate(valueD*Math.PI/180);
@@ -196,6 +250,15 @@ function rotate(){
 
   ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
     ctx.restore();
+    $('#previw').attr('src',c.toDataURL('image/jpeg') );
+}
+function flip(){
+
+
+  ctx.scale(1, -1);
+ctx.translate(0, -img.naturalHeight);
+ctx.drawImage(img, 0,0, img.naturalWidth, img.naturalHeight);
+$('#previw').attr('src',c.toDataURL('image/jpeg') );
 }
 function saturate(){
   var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -216,6 +279,15 @@ function saturate(){
 
   ctx.putImageData(imageData, 0, 0);
   console.log(ctx.getImageData(0, 0, canvas.width, canvas.height));
+$('#previw').attr('src',c.toDataURL('image/jpeg') );
+}
+function bluer(){
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  var dataArray = imageData.data;
+  ctx.globalAlpha = 0.1;
+
+for (var y=0;y<10;++y) ctx.drawImage(img,0,y,img.naturalWidth, img.naturalHeight);
+  $('#previw').attr('src',c.toDataURL('image/jpeg') );
 
 }
 // function showSaturat(text){
@@ -255,6 +327,7 @@ function grayscale(){
   data[i + 2] = avg; // blue
 }
 ctx.putImageData(imageData, 0, 0);
+$('#previw').attr('src',c.toDataURL('image/jpeg') );
 
 };
 function invert(){
@@ -266,14 +339,14 @@ function invert(){
     data[i + 2] = 255 - data[i + 2]; // blue
   }
   ctx.putImageData(imageData, 0, 0);
-
+$('#previw').attr('src',c.toDataURL('image/jpeg') );
 };
 
 function showValue(newValue){
   console.log(newValue);
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  var imgDiffWidth = img.width;
-  var imgDiffHeight = img.height;
+  var imgDiffWidth = img.naturalWidth;
+  var imgDiffHeight = img.naturalHeight;
   ctx.save();
   ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
   ctx.rotate(newValue*Math.PI/180);
@@ -281,8 +354,10 @@ function showValue(newValue){
 
   ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
     ctx.restore();
+    $('#previw').attr('src',c.toDataURL('image/jpeg') );
 }
 function changeColorValue(sobj, val){
+  $('#previw').attr('src',c.toDataURL('image/jpeg') );
 
 }
 
@@ -304,6 +379,7 @@ function brightness(amount){
 	}
 	data.data = pixels;
 	ctx.putImageData(data,0,0);//put the image data back
+  $('#previw').attr('src',c.toDataURL('image/jpeg') );
 }
 function contrast(amount){
 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
@@ -323,6 +399,7 @@ function contrast(amount){
 	}
 	data.data = pixels;
 	ctx.putImageData(data,0,0);//put the image data back
+  $('#previw').attr('src',c.toDataURL('image/jpeg') );
 }
 // ///rotate
 //
