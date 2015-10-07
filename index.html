@@ -50,7 +50,7 @@ max-height: 100%;
   <div class='rotate'>
     <button onclick="rotate()">rotate canvas</button>
     <!-- <button onclick="resizeClicked()">newRotate()</button> -->
-    <input type="range" min="0" max="360" value="0" step="15" onchange="showValue(this.value)" />
+    <input type="range" min="0" max="360" value="0" step="15" oninput="showValue(this.value)" onchange="showValue(this.value)" />
 
 </div>
 
@@ -156,11 +156,11 @@ input.addEventListener('change', handleFiles);
  function canvasdraw  () {
 
     c.width = $(".resizeable").width();
-    c.height =  $(".resizeable").width();
+    c.height =  $(".resizeable").height();
     var diff = img.naturalWidth/img.width;
     var left = $('.draggable').offset().left*(img.naturalWidth/img.width);
     var top = $('.draggable').offset().top*(img.naturalHeight/img.height);
-    console.log($(".resizeable").width());
+
 
 ctx.save();
     ctx.clearRect(left,top,$(".resizeable").height()*diff, $(".resizeable").width()*diff);
@@ -174,17 +174,28 @@ ctx.save();
 
 
 }
+var valueD = 0;
+var counter = 0;
 function rotate(){
-  console.log('rotate');
-  var imgDiffWidth = (img.naturalWidth/(img.naturalWidth/img.width));
-  var imgDiffHeight = (img.naturalHeight/(img.naturalHeight/img.height));
-  console.log(imgDiffWidth);
+
+  counter++;
+  if (counter < 4){
+    valueD = valueD + 90;
+  } else{
+    counter = 0;
+    valueD = 0;
+  }
+
   ctx.clearRect(0,0,canvas.width,canvas.height);
+  var imgDiffWidth = img.width;
+  var imgDiffHeight = img.height;
+  ctx.save();
   ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
-  ctx.rotate(90*Math.PI/180);
-    $('#img').attr('src',c.toDataURL('image/jpeg') );
+  ctx.rotate(valueD*Math.PI/180);
+
 
   ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
+    ctx.restore();
 }
 function saturate(){
   var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -260,14 +271,16 @@ function invert(){
 
 function showValue(newValue){
   console.log(newValue);
-  var imgDiffWidth = (img.naturalWidth/(img.naturalWidth/img.width));
-  var imgDiffHeight = (img.naturalHeight/(img.naturalHeight/img.height));
-  console.log(imgDiffWidth);
   ctx.clearRect(0,0,canvas.width,canvas.height);
+  var imgDiffWidth = img.width;
+  var imgDiffHeight = img.height;
+  ctx.save();
   ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
   ctx.rotate(newValue*Math.PI/180);
-    ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
-      $('#img').attr('src',c.toDataURL('image/jpeg') );
+
+
+  ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
+    ctx.restore();
 }
 function changeColorValue(sobj, val){
 
@@ -275,42 +288,42 @@ function changeColorValue(sobj, val){
 
 /////FUNCTIONALYTI
 
-// function brightness(amount){
-// 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
-// 	var pixels = data.data;
-// 	for(var i = 0; i < pixels.length; i+=4){//loop through all data
-// 		/*
-// 		pixels[i] is the red component
-// 		pixels[i+1] is the green component
-// 		pixels[i+2] is the blue component
-// 		pixels[i+3] is the alpha component
-// 		*/
-// 		pixels[i] += amount;
-// 		pixels[i+1] += amount;
-// 		pixels[i+2] += amount;
-// 	}
-// 	data.data = pixels;
-// 	ctx.putImageData(data,0,0);//put the image data back
-// }
-// function contrast(amount){
-// 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
-// 	var pixels = data.data;
-// 	for(var i = 0; i < pixels.length; i+=4){//loop through all data
-// 		/*
-// 		pixels[i] is the red component
-// 		pixels[i+1] is the green component
-// 		pixels[i+2] is the blue component
-// 		pixels[i+3] is the alpha component
-// 		*/
-// 		var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
-//
-// 		pixels[i] += brightness > 127 ? amount : -amount;
-// 		pixels[i+1] += brightness > 127 ? amount : -amount;
-// 		pixels[i+2] += brightness > 127 ? amount : -amount;
-// 	}
-// 	data.data = pixels;
-// 	ctx.putImageData(data,0,0);//put the image data back
-// }
+function brightness(amount){
+	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+	var pixels = data.data;
+	for(var i = 0; i < pixels.length; i+=4){//loop through all data
+		/*
+		pixels[i] is the red component
+		pixels[i+1] is the green component
+		pixels[i+2] is the blue component
+		pixels[i+3] is the alpha component
+		*/
+		pixels[i] += amount;
+		pixels[i+1] += amount;
+		pixels[i+2] += amount;
+	}
+	data.data = pixels;
+	ctx.putImageData(data,0,0);//put the image data back
+}
+function contrast(amount){
+	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+	var pixels = data.data;
+	for(var i = 0; i < pixels.length; i+=4){//loop through all data
+		/*
+		pixels[i] is the red component
+		pixels[i+1] is the green component
+		pixels[i+2] is the blue component
+		pixels[i+3] is the alpha component
+		*/
+		var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
+
+		pixels[i] += brightness > 127 ? amount : -amount;
+		pixels[i+1] += brightness > 127 ? amount : -amount;
+		pixels[i+2] += brightness > 127 ? amount : -amount;
+	}
+	data.data = pixels;
+	ctx.putImageData(data,0,0);//put the image data back
+}
 // ///rotate
 //
 //
