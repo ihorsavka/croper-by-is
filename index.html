@@ -146,11 +146,11 @@ if (memoCount > 1){
   console.log('src',$( '#num' + id).html());
   $('#img').attr('src',$( '#num' + id).html());
 }else{
-  var id = memoCount;
+  var id = 0;
   console.log('id',id);
   // console.log('src',$( "'#" + id + "'").html());
   console.log('src',$( '#num' + id).html());
-  $('#img').attr('src',img);
+  $('#img').attr('src',$( '#num' + id).html());
 }
 
 
@@ -215,7 +215,7 @@ function readURL(input) {
 
         reader.onload = function (e) {
             $('#img').attr('src', e.target.result);
-            $( ".memo" ).append( "<img id='num0'"  +">");
+            $( ".memo" ).append( "<div id='num0'>" + e.target.result +"</div>");
             $('#num0').attr('src', e.target.result);
 
         }
