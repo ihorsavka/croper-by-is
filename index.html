@@ -17,6 +17,9 @@ height: 400px;
   border: 1px dashed;
   position: absolute;
 }
+.memo{
+  display: none;
+}
 .imageBox img{
   max-width: 100%;
 max-height: 100%;
@@ -35,6 +38,7 @@ max-height: 100%;
     <button onclick="openCroper()">Croper</button>
     <button onclick="openRotate()"> Rotate</button>
     <button onclick="openEdit()"> Edit</button>
+    <button onclick="openResize()"> resize</button>
 
   </section>
   <div class="imageBox">
@@ -58,9 +62,11 @@ max-height: 100%;
 <div class='resize'>
 
   <!-- <button onclick="resizeClicked()">newRotate()</button> -->
-  <input type="range" min="0" max="360" value="0" step="15" oninput="resize(this.value)" onchange="resize(this.value)" />
+  <input type="text" id="widthinput" oninput="wChangeInp(this.value)" onchange="resize(this.value)" />
+  <input type="text"   id="heightinput" oninput="resizeH(this.value)" onchange="resize(this.value)" />
 
 </div>
+<div class="memo"></div>
 
 
 <div class='edit'>
@@ -77,6 +83,7 @@ max-height: 100%;
               <button onclick="bluer()">bluer image</button>
 </div>
 <button type="button" onclick="save()" name="Save">Save</button>
+<button type="button" onclick="roleBack()" name="Save">Back</button>
 
 <script type="text/javascript">
 
@@ -102,6 +109,7 @@ function fade(){
   $('.cropingBlock').fadeOut();
   $('.edit').fadeOut();
   $('.rotate').fadeOut();
+  $('.resize').fadeOut();
 }
 fade();
 
@@ -118,11 +126,33 @@ $(".draggable").draggable({
 });
 
 //////canvas Functions
-
+var memoCount = 0;
 
 var input = document.getElementById('input');
 function save(){
+  memoCount ++;
   $('#img').attr('src',c.toDataURL('image/jpeg') );
+  $( ".memo" ).append( "<div id='num" + memoCount + "'>" + c.toDataURL('image/jpeg') +"</div>");
+
+  fade();
+}
+function roleBack(){
+  console.log(memoCount);
+if (memoCount > 1){
+  memoCount = memoCount -1;
+  var id = memoCount;
+  console.log('id',id);
+  // console.log('src',$( "'#" + id + "'").html());
+  console.log('src',$( '#num' + id).html());
+  $('#img').attr('src',$( '#num' + id).html());
+}else{
+  var id = memoCount;
+  console.log('id',id);
+  // console.log('src',$( "'#" + id + "'").html());
+  console.log('src',$( '#num' + id).html());
+  $('#img').attr('src',img);
+}
+
 
   fade();
 }
@@ -145,6 +175,19 @@ function openRotate(){
   $('.rotate').fadeIn();
   c.width = img.naturalWidth;
   c.height =  img.naturalHeight;
+  ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight);
+
+}
+function openResize(){
+  fade();
+  // $('canvas').fadeIn();
+  $('.resize').fadeIn();
+  c.width = img.naturalWidth;
+  c.height =  img.naturalHeight;
+  console.log($('#widthinput'));
+  $('#widthinput').attr('value',img.naturalWidth);
+  $('#heightinput').attr('value',img.naturalHeight);
+
   ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight);
 
 }
@@ -172,6 +215,9 @@ function readURL(input) {
 
         reader.onload = function (e) {
             $('#img').attr('src', e.target.result);
+            $( ".memo" ).append( "<img id='num0'"  +">");
+            $('#num0').attr('src', e.target.result);
+
         }
 
         reader.readAsDataURL(input.files[0]);
@@ -208,11 +254,20 @@ ctx.save();
 
 
 }
+function wChangeInp(value){
+  // var sizeDiff =  parseInt(value)/img.naturalWidth;
+  // var h = img.naturalHeight * sizeDiff;
+  //
+  //   $('#heightinput').attr('value',h);
+}
  function resize(value) {
 
-var sizeDiff = img.width/c.width;
-c.width = img.naturalWidth + (parseInt(value)*sizeDiff);
-c.height =  img.naturalHeight + parseInt(value);
+var sizeDiff =  parseInt(value)/img.naturalWidth;
+console.log(parseInt(value));
+console.log(sizeDiff);
+c.width =  parseInt(value);
+c.height =  img.naturalHeight * sizeDiff;
+var h = img.naturalHeight * sizeDiff;
 
 
 ctx.save();
@@ -221,11 +276,29 @@ ctx.save();
 
 
     ctx.drawImage(img,0,0,img.naturalWidth, img.naturalHeight, 0, 0,   c.width,c.height);
+
+    $('#heightinput').attr('value',h);
     $('#previw').attr('src',c.toDataURL('image/jpeg') );
 
+}
+function resizeH(value) {
+
+var sizeDiff = parseInt(value)/img.naturalHeight;
+c.width = img.naturalWidth * sizeDiff;
+var w = img.naturalWidth * sizeDiff;
+c.height =   parseInt(value);
 
 
+ctx.save();
+   ctx.clearRect(0,0,c.width, c.height);
+   ctx.restore();
 
+
+   ctx.drawImage(img,0,0,img.naturalWidth, img.naturalHeight, 0, 0,   c.width,c.height);
+
+   $('#widthinput').attr('value',w);
+
+   $('#previw').attr('src',c.toDataURL('image/jpeg') );
 
 }
 var valueD = 0;
