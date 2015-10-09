@@ -56,7 +56,7 @@ max-height: 100%;
     <button onclick="rotate()">rotate canvas</button>
     <button onclick="flip()">flip canvas</button>
     <!-- <button onclick="resizeClicked()">newRotate()</button> -->
-    <input type="range" min="-360" max="360" value="0" step="1" oninput="showValue(this.value)" onchange="showValue(this.value)" />
+    <input type="range" min="0" max="180" value="0" step="1" oninput="showValue(this.value)" />
 
 </div>
 <div class='resize'>
@@ -422,17 +422,19 @@ $('#previw').attr('src',c.toDataURL('image/jpeg') );
 };
 
 function showValue(newValue){
-  console.log(newValue);
 
+ console.log('val',newValue);
   ctx.clearRect(0,0,canvas.width,canvas.height);
   var imgDiffWidth = img.naturalWidth;
   var imgDiffHeight = img.naturalHeight;
+  var wDif = imgDiffWidth + newValue * (newValue/1.3);
+  var wDifSize = imgDiffWidth + newValue * (newValue);
   ctx.save();
   ctx.translate((imgDiffWidth)/2,(imgDiffHeight)/2);
   ctx.rotate(newValue*Math.PI/180);
 
 
-  ctx.drawImage(img,-(imgDiffWidth)/2, -(imgDiffHeight)/2,imgDiffWidth,imgDiffHeight);
+  ctx.drawImage(img,-(wDif)/2, -(imgDiffHeight * (wDif/imgDiffWidth))/2,wDifSize,imgDiffHeight * (wDifSize/imgDiffWidth));
     ctx.restore();
     $('#previw').attr('src',c.toDataURL('image/jpeg') );
 }
