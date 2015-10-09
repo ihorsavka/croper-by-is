@@ -11,8 +11,8 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
 height: 400px;
 }
 .cropingBlock{
-  min-width:200px;
-  min-height: 200px;
+  width:200px;
+  height: 200px;
   display: block;
   border: 1px dashed;
   position: absolute;
@@ -52,6 +52,7 @@ max-height: 100%;
   <input type="file" name="First Name" id="hidden"></input>
 
   <button class='crop' onclick="canvasdraw()"> Cropp</button>
+  <button class='crop' onclick="picAsp()"> Cropp</button>
   <div class='rotate'>
     <button onclick="rotate()">rotate canvas</button>
     <button onclick="flip()">flip canvas</button>
@@ -115,16 +116,33 @@ function fade(){
 fade();
 
 /////Functions for croping zone
+var croperMinWidth = 150;
+var croperMinHeight = 150;
+var croperAspRat = false;
+function cropInit(){
+  $(".resizeable").resizable({
+      containment: ".imageBox",
+        minWidth: croperMinWidth,
+        minHeight: croperMinHeight,
+        aspectRatio: croperAspRat,
 
-$(".resizeable").resizable({
-    containment: ".imageBox"
-});
+
+  });
+}
+
 
 
 $(".draggable").draggable({
     cursor: "crosshair",
     containment: ".imageBox",
 });
+function picAsp(){
+  $( ".resizeable" ).resizable( "destroy" );
+  var croperMinWidth = 300;
+  var croperMinHeight = 150;
+  var croperAspRat = true;
+  cropInit();
+}
 
 //////canvas Functions
 var memoCount = 0;
@@ -135,8 +153,7 @@ function save(){
   saveObj[memoCount] = c.toDataURL('image/jpeg');
   console.log(saveObj);
   $('#img').attr('src',c.toDataURL('image/jpeg') );
-  //
-  // $( ".memo" ).append( "<div id='num" + memoCount + "'>" + c.toDataURL('image/jpeg') +"</div>");
+
 
   fade();
 }
@@ -146,14 +163,11 @@ if (memoCount > 1){
   memoCount = memoCount -1;
   var id = memoCount;
 
-  // console.log('id',id);
-  // console.log('src',$( "'#" + id + "'").html());
   console.log('src',saveObj[id]);
   $('#img').attr('src',saveObj[id]);
 }else{
   var id = 0;
-  // console.log('id',id);
-  // console.log('src',$( "'#" + id + "'").html());
+
   console.log('src',saveObj[id]);
   $('#img').attr('src',saveObj[id]);
 }
@@ -166,17 +180,17 @@ if (memoCount > 1){
 ////opening croper
 function openCroper(){
   fade();
-  // $('canvas').fadeIn();
   $('.crop').fadeIn();
   $('.cropingBlock').fadeIn();
+  cropInit();
 
 }
+
 
 ///opening rotations
 
 function openRotate(){
   fade();
-  // $('canvas').fadeIn();
   $('.rotate').fadeIn();
   c.width = img.naturalWidth;
   c.height =  img.naturalHeight;
@@ -185,7 +199,6 @@ function openRotate(){
 }
 function openResize(){
   fade();
-  // $('canvas').fadeIn();
   $('.resize').fadeIn();
   c.width = img.naturalWidth;
   c.height =  img.naturalHeight;
@@ -197,11 +210,9 @@ function openResize(){
 
 }
 
-////opening editing block
 
 function openEdit(){
   fade();
-  // $('canvas').fadeIn();
   $('.edit').fadeIn();
   c.width = img.naturalWidth;
   c.height =  img.naturalHeight;
@@ -221,8 +232,6 @@ function readURL(input) {
         reader.onload = function (e) {
             saveObj[0] = e.target.result;
             $('#img').attr('src', saveObj[0]);
-            // $( ".memo" ).append( "<div id='num0'>" + e.target.result +"</div>");
-            // $('#num0').attr('src', e.target.result);
 
         }
 
@@ -261,10 +270,7 @@ ctx.save();
 
 }
 function wChangeInp(value){
-  // var sizeDiff =  parseInt(value)/img.naturalWidth;
-  // var h = img.naturalHeight * sizeDiff;
-  //
-  //   $('#heightinput').attr('value',h);
+
 }
  function resize(value) {
 
@@ -369,30 +375,7 @@ for (var y=0;y<10;++y) ctx.drawImage(img,0,y,img.naturalWidth, img.naturalHeight
   $('#previw').attr('src',c.toDataURL('image/jpeg') );
 
 }
-// function showSaturat(text){
-//   var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-//   var dataArray = imageData.data;
-//   console.log(text);
-//
-//   for(var i = 0; i < dataArray.length; i = text)
-//   {
-//           var red = dataArray[i]; // 0 to 255
-//           var green = dataArray[i + 1]; // 0 to 255
-//           var blue = dataArray[i + 2]; // 0 to 255
-//           var alpha = dataArray[i + 3]; // 0 to 255
-//
-//           dataArray[i] = 0.2 * red; // you can multiply the color and alpha values with a number between 0 and 1
-//           dataArray[i + 1] = 1 * green;
-//           dataArray[i + 2] = 1 * blue;
-//           dataArray[i + 3] = 1 * alpha;
-//   }
-//
-//
-//
-//   ctx.putImageData(imageData, 0, 0);
-//
-//
-// }
+
 
 
 
@@ -449,12 +432,7 @@ function brightness(amount){
 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
 	var pixels = data.data;
 	for(var i = 0; i < pixels.length; i+=4){//loop through all data
-		/*
-		pixels[i] is the red component
-		pixels[i+1] is the green component
-		pixels[i+2] is the blue component
-		pixels[i+3] is the alpha component
-		*/
+
 		pixels[i] += amount;
 		pixels[i+1] += amount;
 		pixels[i+2] += amount;
@@ -467,12 +445,7 @@ function contrast(amount){
 	var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
 	var pixels = data.data;
 	for(var i = 0; i < pixels.length; i+=4){//loop through all data
-		/*
-		pixels[i] is the red component
-		pixels[i+1] is the green component
-		pixels[i+2] is the blue component
-		pixels[i+3] is the alpha component
-		*/
+
 		var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
 
 		pixels[i] += brightness > 127 ? amount : -amount;
@@ -483,43 +456,7 @@ function contrast(amount){
 	ctx.putImageData(data,0,0);//put the image data back
   $('#previw').attr('src',c.toDataURL('image/jpeg') );
 }
-// ///rotate
-//
-//
-// function draw(){
-//
-// canvas.width = img.naturalWidth;
-//     canvas.height = img.naturalHeight;
-//
-//     // calculate the centerpoint of the canvas
-//     var cx = canvas.width / 2;
-//     var cy = canvas.height / 2;
-//
-//
-//     // draw the rect in the center of the newly sized canvas
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//     ctx.fillStyle = "rgba(216,216,150,1.0)";
-//     ctx.translate(cx, cy);
-//     ctx.rotate(rotation * deg2Rad);
-//     ctx.drawImage(img, -imgWidth / 2, -imgHeight / 2);
-//
-//
-// }
-// function resizeClicked(e) {
-//   var imgWidth = img.naturalWidth;
-//   var imgHeight = img.naturalHeight;
-//     rotation += 30;
-//     newSize(imgWidth, imgHeight, rotation);
-//     draw();
-// }
-//
-// function newSize(w, h, a) {
-//     var rads = a * Math.PI / 180;
-//     var c = Math.abs(Math.cos(rads));
-//     var s = Math.abs(Math.sin(rads));
-//     size.width = h * s + w * c;
-//     size.height = h * c + w * s;
-// }
+
 </script>
 </body>
 
