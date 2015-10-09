@@ -53,6 +53,7 @@ max-height: 100%;
 
   <button class='crop' onclick="canvasdraw()"> Cropp</button>
   <button class='crop' onclick="picAsp()"> Cropp</button>
+  <button class='crop' onclick="freeAsp()"> 16:9</button>
   <div class='rotate'>
     <button onclick="rotate()">rotate canvas</button>
     <button onclick="flip()">flip canvas</button>
@@ -116,11 +117,12 @@ function fade(){
 fade();
 
 /////Functions for croping zone
-var croperMinWidth = 150;
-var croperMinHeight = 150;
-var croperAspRat = false;
-function cropInit(){
-  $(".resizeable").resizable({
+
+function cropInit(croperMinWidth,croperMinHeight,croperAspRat){
+
+
+
+  $(".resizeable").resizable("destroy").resizable({
       containment: ".imageBox",
         minWidth: croperMinWidth,
         minHeight: croperMinHeight,
@@ -130,18 +132,38 @@ function cropInit(){
   });
 }
 
+$(".resizeable").resizable({
+    containment: ".imageBox",
 
+
+
+});
 
 $(".draggable").draggable({
     cursor: "crosshair",
     containment: ".imageBox",
 });
 function picAsp(){
-  $( ".resizeable" ).resizable( "destroy" );
   var croperMinWidth = 300;
   var croperMinHeight = 150;
   var croperAspRat = true;
-  cropInit();
+  $(".resizeable").css({
+    "min-width": croperMinWidth,
+    "min-height": croperMinHeight
+  });
+  console.log(  $(".resizeable").resizable());
+    cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+}
+function freeAsp(){
+  var croperMinWidth = 150;
+  var croperMinHeight = 150;
+  var croperAspRat = false;
+  $(".resizeable").css({
+    "min-width": croperMinWidth,
+    "min-height": croperMinHeight
+  });
+  console.log(  $(".resizeable").resizable());
+  cropInit(croperMinWidth,croperMinHeight,croperAspRat);
 }
 
 //////canvas Functions
