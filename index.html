@@ -1,166 +1,262 @@
 <html>
-<head>
-    <link rel="stylesheet" type="text/css"
-href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="./cropper.css">
+  <head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="./cropper.css" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script
+      src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"
+      integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <input type="file" id="input" />
 
-
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
-<script
-        src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"
-        integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY="
-        crossorigin="anonymous"></script>
-</head>
-<body>
-
-<input type="file" id="input"></input>
-<div class="maine-box">
-  <section class="menu memo">
-    <button onclick="openCropper()"><i class="fa fa-crop"></i>Cropper</button>
-    <button onclick="openRotate()"> <i class="fa fa-undo"></i>Rotate</button>
-    <button onclick="openEdit()"><i class="fa fa-eyedropper"></i>Edit</button>
-    <button onclick="openResize()"><i class="fa fa-arrows-alt"></i>Resize</button>
-    <button onclick="openSharpe()"><i class="fa fa-diamond"></i>Sharpness</button>
-    <button onclick="saveToMachine()"><i class="fa fa-download"></i>Save</button>
-
-
-  </section>
-  <div class='edit memo'>
-      <div class="edit-top-actions">
-        <button type="button" onclick="back()" name="Save" class="icon-btn" title="Back" aria-label="Back">
-          <i class="fa fa-arrow-left"></i>
+    <div class="maine-box">
+      <section class="menu memo">
+        <button onclick="openCropper()"><i class="fa fa-crop"></i>Cropper</button>
+        <button onclick="openRotate()"><i class="fa fa-undo"></i>Rotate</button>
+        <button onclick="openEdit()"><i class="fa fa-eyedropper"></i>Edit</button>
+        <button onclick="openResize()"><i class="fa fa-arrows-alt"></i>Resize</button>
+        <button onclick="openSharpe()"><i class="fa fa-diamond"></i>Sharpness</button>
+        <button onclick="saveToMachine()"><i class="fa fa-download"></i>Save</button>
+      </section>
+      <div class="edit memo">
+        <div class="edit-top-actions">
+          <button
+            type="button"
+            onclick="back()"
+            name="Save"
+            class="icon-btn"
+            title="Back"
+            aria-label="Back"
+          >
+            <i class="fa fa-arrow-left"></i>
+          </button>
+          <button
+            type="button"
+            onclick="save()"
+            name="Save"
+            class="icon-btn"
+            title="Save changes"
+            aria-label="Save changes"
+          >
+            <i class="fa fa-floppy-o"></i>
+          </button>
+        </div>
+        <div class="edit-tabs">
+          <button
+            id="edit-tab-brightness"
+            class="icon-btn edit-tab"
+            onclick="openBr()"
+            title="Brightness tools"
+            aria-label="Brightness tools"
+          >
+            <i class="fa fa-sun-o"></i>
+          </button>
+          <button
+            id="edit-tab-contrast"
+            class="icon-btn edit-tab"
+            onclick="openCont()"
+            title="Contrast tools"
+            aria-label="Contrast tools"
+          >
+            <i class="fa fa-adjust"></i>
+          </button>
+          <button
+            id="edit-tab-effects"
+            class="icon-btn edit-tab"
+            onclick="openEffects()"
+            title="Effects tools"
+            aria-label="Effects tools"
+          >
+            <i class="fa fa-magic"></i>
+          </button>
+        </div>
+        <div class="edit-panel edit-panel-brightness">
+          <button
+            type="button"
+            onclick="brightness(-10)"
+            class="icon-btn"
+            title="Brightness -10"
+            aria-label="Decrease brightness"
+          >
+            <i class="fa fa-minus"></i>
+          </button>
+          <button
+            type="button"
+            onclick="brightness(10)"
+            class="icon-btn"
+            title="Brightness +10"
+            aria-label="Increase brightness"
+          >
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+        <div class="edit-panel edit-panel-contrast">
+          <button
+            type="button"
+            onclick="contrast(-10)"
+            class="icon-btn"
+            title="Contrast -10"
+            aria-label="Decrease contrast"
+          >
+            <i class="fa fa-minus-square"></i>
+          </button>
+          <button
+            type="button"
+            onclick="contrast(10)"
+            class="icon-btn"
+            title="Contrast +10"
+            aria-label="Increase contrast"
+          >
+            <i class="fa fa-plus-square"></i>
+          </button>
+        </div>
+        <div class="edit-panel edit-panel-effects">
+          <button
+            class="btn-gr icon-btn"
+            onclick="grayscale()"
+            title="Grayscale"
+            aria-label="Grayscale"
+          >
+            <i class="fa fa-picture-o"></i>
+          </button>
+          <button class="btn-gr icon-btn" onclick="invert()" title="Invert" aria-label="Invert">
+            <i class="fa fa-exchange"></i>
+          </button>
+          <button
+            class="btn-gr icon-btn"
+            onclick="saturate()"
+            title="Saturate"
+            aria-label="Saturate"
+          >
+            <i class="fa fa-tint"></i>
+          </button>
+          <button class="btn-gr icon-btn" onclick="bluer()" title="Blur" aria-label="Blur">
+            <i class="fa fa-circle-o-notch"></i>
+          </button>
+        </div>
+        <div class="br-scroll">
+          <input
+            type="range"
+            min="-100"
+            max="100"
+            value="0"
+            step="10"
+            onchange="brightnessScroll(this.value)"
+          />
+        </div>
+        <div class="ct-scroll">
+          <input
+            type="range"
+            min="-50"
+            max="50"
+            value="0"
+            step="5"
+            onchange="contrastScroll(this.value)"
+          />
+        </div>
+      </div>
+      <div class="sharp memo">
+        <button type="button" onclick="back()" name="Save">
+          <i class="fa fa-floppy-o"></i>Back
         </button>
-        <button type="button" onclick="save()" name="Save" class="icon-btn" title="Save changes" aria-label="Save changes">
-          <i class="fa fa-floppy-o"></i>
+        <input type="range" id="mix" min="0" max="100" value="00" onchange="update(this.value)" />
+        <button type="button" onclick="save()" name="Save">
+          <i class="fa fa-floppy-o"></i>Save
         </button>
       </div>
-
-      <div class="edit-tabs">
-        <button id="edit-tab-brightness" class="icon-btn edit-tab" onclick="openBr()" title="Brightness tools" aria-label="Brightness tools">
-          <i class="fa fa-sun-o"></i>
+      <div class="function-buttons memo"></div>
+      <div class="memo">
+        <button type="button" class="crop" onclick="back()" name="Save">
+          <i class="fa fa-floppy-o"></i>Back
         </button>
-        <button id="edit-tab-contrast" class="icon-btn edit-tab" onclick="openCont()" title="Contrast tools" aria-label="Contrast tools">
-          <i class="fa fa-adjust"></i>
+        <button class="crop btn-gr" onclick="canvasdraw()">Crop</button>
+        <button class="crop" onclick="freeAsp()">
+          <span class="box free-asp"></span>Free Aspect ratio
         </button>
-        <button id="edit-tab-effects" class="icon-btn edit-tab" onclick="openEffects()" title="Effects tools" aria-label="Effects tools">
-          <i class="fa fa-magic"></i>
+        <button class="crop" onclick="oneAsp()"><span class="box"></span>1:1</button>
+        <button class="crop" onclick="camAsp()"><span class="box for-asp"></span> 4:3</button>
+        <button class="crop" onclick="cybAsp()"><span class="box tree-asp"></span> 3:2</button>
+        <button class="crop" onclick="picAsp()"><span class="box nine-asp"></span> 16:9</button>
+        <button class="crop" onclick="realAspectRatio()">
+          <span class="box rr-asp"></span> Real aspectRatio
         </button>
-      </div>
-
-      <div class="edit-panel edit-panel-brightness">
-        <button type="button" onclick="brightness(-10)" class="icon-btn" title="Brightness -10" aria-label="Decrease brightness">
-          <i class="fa fa-minus"></i>
-        </button>
-        <button type="button" onclick="brightness(10)" class="icon-btn" title="Brightness +10" aria-label="Increase brightness">
-          <i class="fa fa-plus"></i>
-        </button>
-      </div>
-
-      <div class="edit-panel edit-panel-contrast">
-        <button type="button" onclick="contrast(-10)" class="icon-btn" title="Contrast -10" aria-label="Decrease contrast">
-          <i class="fa fa-minus-square"></i>
-        </button>
-        <button type="button" onclick="contrast(10)" class="icon-btn" title="Contrast +10" aria-label="Increase contrast">
-          <i class="fa fa-plus-square"></i>
+        <button type="button" onclick="save()" name="Save" class="crop">
+          <i class="fa fa-floppy-o"></i>Save
         </button>
       </div>
-
-      <div class="edit-panel edit-panel-effects">
-        <button class="btn-gr icon-btn" onclick="grayscale()" title="Grayscale" aria-label="Grayscale">
-          <i class="fa fa-picture-o"></i>
+      <div class="rotate memo">
+        <button type="button" onclick="back()" name="Save">
+          <i class="fa fa-floppy-o"></i>Back
         </button>
-        <button class="btn-gr icon-btn" onclick="invert()" title="Invert" aria-label="Invert">
-          <i class="fa fa-exchange"></i>
-        </button>
-        <button class="btn-gr icon-btn" onclick="saturate()" title="Saturate" aria-label="Saturate">
-          <i class="fa fa-tint"></i>
-        </button>
-        <button class="btn-gr icon-btn" onclick="bluer()" title="Blur" aria-label="Blur">
-          <i class="fa fa-circle-o-notch"></i>
-        </button>
-      </div>
-
-      <div class="br-scroll">
-        <input type="range" min="-100" max="100" value="0" step="10" onchange=" brightnessScroll(this.value)" />
-
-      </div>
-      <div class="ct-scroll">
-        <input type="range" min="-50" max="50" value="0" step="5" onchange="contrastScroll(this.value)" />
-
-      </div>
-  </div>
-  <div class='sharp memo'>
-        <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
-        <input type=range id=mix min=0 max=100 value=00 onchange="update(this.value)">
-        <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
-  </div>
-  <div class="function-buttons memo">
-
-
-  </div>
-  <div class="memo">
-    <button type="button" class="crop" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
-    <button class='crop btn-gr' onclick="canvasdraw()"> Crop</button>
-        <button class='crop ' onclick="freeAsp()"> <span class="box free-asp"></span>Free Aspect ratio</button>
-        <button class='crop ' onclick="oneAsp()"> <span class="box"></span>1:1</button>
-    <button class='crop ' onclick="camAsp()"><span class="box for-asp"></span> 4:3</button>
-    <button class='crop ' onclick="cybAsp()"><span class="box tree-asp"></span> 3:2</button>
-    <button class='crop ' onclick="picAsp()"><span class="box nine-asp"></span> 16:9</button>
-    <button class='crop ' onclick="realAspectRatio()"><span class="box rr-asp"></span> Real aspectRatio</button>
-
-    <button type="button" onclick="save()" name="Save" class="crop"><i class="fa fa-floppy-o"></i>Save</button>
-  </div>
-    <div class='rotate memo'>
-        <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
         <button class="btn-gr" onclick="rotate()">rotate canvas</button>
         <button class="btn-gr" onclick="flip()">flip canvas</button>
         <button class="btn-gr" onclick="openRT()">rotate canvas</button>
-      <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
-
-  </div>
-  <div class="memo rt-scroll">
-    <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
-  <span>Rotate</span>
-    <input type="range" min="0" max="180" value="0" step="1" oninput="miniShowValue(this.value)" onchange="showValue(this.value)" />
-          <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
-</div>
-  <div class='resize memo'>
-    <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
-
-    <input type="number" id="widthinput"  onchange="resize(this.value)" />
-    <input type="number"   id="heightinput"  onchange="resize(this.value)" />
-    <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
-
-  </div>
-
-  <div class="imageBox">
-
-  <img id="img"/>
-  <img id="previw"/>
-  <img id="initImg"/>
-  <canvas width="800"  height="400" id="miniCanvas" style="position: absolute; left: 0px; z-index: 5000;"></canvas>
-
-  <div class="cropingBlock resizeable draggable"></div>
-</div>
-<div class="memo">
-  <button type="button" onclick="roleBack()"><i class="fa fa-reply"></i></button>
-  <button type="button" onclick="roleFront()" ><i class="fa fa-share"></i></button>
-  <button type="button" class="show-init" onclick="showInit()" >Show initial image</button>
-  <button type="button" class="hide-init" onclick="hideInit()" >hide initial image</button>
-</div>
-<div class="canvasDiv">
-  <canvas width="800" style="visibility:hidden;" height="400" id="canvas"></canvas>
-
-</div>
-
-
-
-</div>
-<script type="text/javascript" src="filters.js"></script>
-<script type="text/javascript" src="cropper.js"></script>
-
-
-</body>
-
+        <button type="button" onclick="save()" name="Save">
+          <i class="fa fa-floppy-o"></i>Save
+        </button>
+      </div>
+      <div class="memo rt-scroll">
+        <button type="button" onclick="back()" name="Save">
+          <i class="fa fa-floppy-o"></i>Back
+        </button>
+        <span>Rotate</span>
+        <input
+          type="range"
+          min="0"
+          max="180"
+          value="0"
+          step="1"
+          oninput="miniShowValue(this.value)"
+          onchange="showValue(this.value)"
+        />
+        <button type="button" onclick="save()" name="Save">
+          <i class="fa fa-floppy-o"></i>Save
+        </button>
+      </div>
+      <div class="resize memo">
+        <button type="button" onclick="back()" name="Save">
+          <i class="fa fa-floppy-o"></i>Back
+        </button>
+        <input type="number" id="widthinput" onchange="resize(this.value)" />
+        <input type="number" id="heightinput" onchange="resize(this.value)" />
+        <button type="button" onclick="save()" name="Save">
+          <i class="fa fa-floppy-o"></i>Save
+        </button>
+      </div>
+      <div class="imageBox">
+        <img id="img" />
+        <img id="previw" />
+        <img id="initImg" />
+        <canvas
+          width="800"
+          height="400"
+          id="miniCanvas"
+          style="position: absolute; left: 0px; z-index: 5000"
+        ></canvas>
+        <div class="cropingBlock resizeable draggable"></div>
+      </div>
+      <div class="memo">
+        <button type="button" onclick="roleBack()"><i class="fa fa-reply"></i></button>
+        <button type="button" onclick="roleFront()"><i class="fa fa-share"></i></button>
+        <button type="button" class="show-init" onclick="showInit()">Show initial image</button>
+        <button type="button" class="hide-init" onclick="hideInit()">hide initial image</button>
+      </div>
+      <div class="canvasDiv">
+        <canvas width="800" style="visibility: hidden" height="400" id="canvas"></canvas>
+      </div>
+    </div>
+    <script type="text/javascript" src="filters.js"></script>
+    <script type="text/javascript" src="cropper.js"></script>
+  </body>
 </html>

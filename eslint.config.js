@@ -12,12 +12,12 @@ module.exports = [
         ...globals.browser,
         ...globals.node,
         $: "readonly",
-        jQuery: "readonly"
-      }
+        jQuery: "readonly",
+      },
     },
     rules: {
       "no-unused-vars": ["warn", { args: "none" }],
-      "no-undef": "error"
-    }
-  }
+      "no-undef": "error",
+    },
+  },
 ];
