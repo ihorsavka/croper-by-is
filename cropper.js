@@ -34,7 +34,7 @@ function sharpen(ctx, w, h, mix) {
         y = h;
     while (y--) {
 
-        x = w;
+        var x = w;
 
         while (x--) {
 
@@ -92,6 +92,10 @@ function fade() {
     $('.ct-scroll').fadeOut();
 }
 
+function back() {
+    return backe();
+}
+
 function backe() {
     fade();
     $('.menu').fadeIn();
@@ -118,6 +122,19 @@ function openRT() {
     save();
 }
 
+function centerCropBox() {
+    var $container = $(".imageBox");
+    var $box = $(".cropingBlock");
+    if ($container.length === 0 || $box.length === 0) return;
+
+    // Clear centering styles that fight with jQuery UI draggable (right/bottom + margin:auto).
+    $box.css({ right: "auto", bottom: "auto", margin: 0 });
+
+    var left = Math.max(0, ($container.width() - $box.outerWidth()) / 2);
+    var top = Math.max(0, ($container.height() - $box.outerHeight()) / 2);
+    $box.css({ left: left, top: top });
+}
+
 ////opening cropper
 function openCropper() {
     fade();
@@ -125,25 +142,44 @@ function openCropper() {
     $('.cropingBlock').fadeIn();
     $('.function-buttons').fadeIn();
     cropInit();
+    centerCropBox();
     $('.menu').fadeOut();
 
 }
 
 function openBr() {
+    $('.edit-panel').hide();
+    $('.edit-panel-brightness').show();
     $('.ct-scroll').fadeOut();
     $('.br-scroll').fadeIn();
+    $('.edit-tab').removeClass('active');
+    $('#edit-tab-brightness').addClass('active');
     save();
 }
 
 function openCont() {
+    $('.edit-panel').hide();
+    $('.edit-panel-contrast').show();
     $('.br-scroll').fadeOut();
     save();
     $('.ct-scroll').fadeIn();
+    $('.edit-tab').removeClass('active');
+    $('#edit-tab-contrast').addClass('active');
+}
+
+function openEffects() {
+    $('.edit-panel').hide();
+    $('.edit-panel-effects').show();
+    $('.br-scroll').fadeOut();
+    $('.ct-scroll').fadeOut();
+    $('.edit-tab').removeClass('active');
+    $('#edit-tab-effects').addClass('active');
+    save();
 }
 
 ///opening rotations
 function openRotate() {
-    backe();
+    back();
     fade();
     $('.menu').fadeOut();
     $('.rotate').fadeIn();
@@ -207,6 +243,7 @@ function openEdit() {
     $('#previw').fadeIn();
     ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight);
     $('#previw').attr('src',c.toDataURL('image/jpeg'));
+    openBr();
 
 }
 
@@ -231,6 +268,7 @@ function picAsp() {
         "min-height": croperMinHeight
     });
     cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+    centerCropBox();
 }
 
 function oneAsp() {
@@ -244,6 +282,7 @@ function oneAsp() {
         "min-height": croperMinHeight
     });
     cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+    centerCropBox();
 }
 
 function cybAsp() {
@@ -257,13 +296,17 @@ function cybAsp() {
         "min-height": croperMinHeight
     });
     cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+    centerCropBox();
 }
 
 function realAspectRatio() {
+    var croperMinWidth;
+    var croperMinHeight;
+    var croperAspRat = true;
+
     if (img.naturalWidth > img.naturalHeight) {
-        var croperMinWidth = img.naturalWidth/10;
-        var croperMinHeight = img.naturalHeight/10;
-        var croperAspRat = true;
+        croperMinWidth = img.naturalWidth/10;
+        croperMinHeight = img.naturalHeight/10;
 
         $(".resizeable").css({
             "width": croperMinWidth,
@@ -272,10 +315,10 @@ function realAspectRatio() {
             "min-height": croperMinHeight
         });
         cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+        centerCropBox();
     } else if (img.naturalWidth === img.naturalHeight) {
-        var croperMinWidth = 200;
-        var croperMinHeight = 200;
-        var croperAspRat = true;
+        croperMinWidth = 200;
+        croperMinHeight = 200;
 
         $(".resizeable").css({
             "width": croperMinWidth,
@@ -285,10 +328,10 @@ function realAspectRatio() {
         });
 
         cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+        centerCropBox();
     } else {
-        var croperMinWidth = 200*((img.naturalWidth+100)/img.naturalWidth);
-        var croperMinHeight = 300;
-        var croperAspRat = true;
+        croperMinWidth = 200*((img.naturalWidth+100)/img.naturalWidth);
+        croperMinHeight = 300;
 
         $(".resizeable").css({
             "width": croperMinWidth,
@@ -298,6 +341,7 @@ function realAspectRatio() {
         });
 
         cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+        centerCropBox();
     }
 }
 
@@ -312,6 +356,7 @@ function camAsp() {
         "min-height": croperMinHeight
     });
     cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+    centerCropBox();
 }
 
 function freeAsp() {
@@ -327,6 +372,7 @@ function freeAsp() {
     });
 
     cropInit(croperMinWidth,croperMinHeight,croperAspRat);
+    centerCropBox();
 }
 
 function save() {
@@ -334,6 +380,38 @@ function save() {
     saveObj[memoCount] = c.toDataURL('image/jpeg');
     $('#img').attr('src',c.toDataURL('image/jpeg'));
     $('#previw').attr('src',c.toDataURL('image/jpeg'));
+}
+
+function saveToMachine() {
+    var previewSrc = $('#previw').attr('src');
+    var imgSrc = $('#img').attr('src');
+    var exportSrc = previewSrc || imgSrc;
+
+    if (!exportSrc) {
+        alert("Please upload and edit an image before saving.");
+        return;
+    }
+
+    var exportImage = new Image();
+    exportImage.onload = function () {
+        c.width = exportImage.naturalWidth || exportImage.width;
+        c.height = exportImage.naturalHeight || exportImage.height;
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.drawImage(exportImage, 0, 0, c.width, c.height);
+
+        var fileName = "cropper-image-" + new Date().toISOString().slice(0, 10) + ".png";
+        var dataUrl = c.toDataURL("image/png");
+        var link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = fileName;
+        link.click();
+    };
+
+    exportImage.onerror = function () {
+        alert("Could not prepare image for download.");
+    };
+
+    exportImage.src = exportSrc;
 }
 
 function roleBack() {
@@ -482,39 +560,35 @@ function rotate() {
 
 
 function rotateA() {
+    var imgDiffWidth = 0;
+    var imgDiffHeight = 0;
+    var trDiffWidth = 0;
+    var trDiffHeight = 0;
+
     if (valueD == 90) {
-        var imgDiffWidth = 0;
-        var imgDiffHeight = -img.naturalHeight;
-        var trDiffWidth = 0;
-        var trDiffHeight =(img.naturalHeight);
+        imgDiffHeight = -img.naturalHeight;
+        trDiffHeight = (img.naturalHeight);
 
         c.width = img.naturalHeight;
         c.height = img.naturalWidth;
     }else if(valueD == 270) {
-        var imgDiffWidth = -(img.naturalWidth);
-        var imgDiffHeight = 0;
-        var trDiffWidth = img.naturalHeight/2;
-        var trDiffHeight =(img.naturalWidth)/2;
+        imgDiffWidth = -(img.naturalWidth);
+        trDiffWidth = img.naturalHeight/2;
+        trDiffHeight = (img.naturalWidth)/2;
         c.width = img.naturalHeight;
         c.height = img.naturalWidth;
 
     }else if(valueD == 180) {
-        var imgDiffWidth = -(img.naturalWidth);
-        var imgDiffHeight = -(img.naturalHeight);
-        var trDiffWidth = 0;
-        var trDiffHeight =0;
+        imgDiffWidth = -(img.naturalWidth);
+        imgDiffHeight = -(img.naturalHeight);
         c.width =  img.naturalWidth;
         c.height = img.naturalHeight;
 
     }else{
-        var imgDiffWidth = 0;
-        var imgDiffHeight = 0;
-        var trDiffWidth = 0;
-        var trDiffHeight =0;
         c.width =  img.naturalWidth;
         c.height = img.naturalHeight;
     }
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, c.width, c.height);
 
 
     ctx.save();
@@ -528,33 +602,37 @@ function rotateA() {
 }
 
 function rotateB() {
-    if (valueD == 90) {
-        var imgDiffWidth = -(img.width)/1.7777;
-        var imgDiffHeight = -(img.height);
+    var imgDiffWidth = 0;
+    var imgDiffHeight = 0;
+    var trDiffWidth = 0;
+    var trDiffHeight = 0;
 
-        var trDiffWidth = 0;
-        var trDiffHeight =(img.height);
+    if (valueD == 90) {
+        imgDiffWidth = -(img.width)/1.7777;
+        imgDiffHeight = -(img.height);
+
+        trDiffHeight =(img.height);
         miniC.width = img.height;
         miniC.height = img.width;
     }else if(valueD == 270) {
-        var imgDiffWidth = -(img.width)/2;
-        var imgDiffHeight = -(img.height)/2;
-        var trDiffWidth = img.height/2;
-        var trDiffHeight =(img.width)/2;
+        imgDiffWidth = -(img.width)/2;
+        imgDiffHeight = -(img.height)/2;
+        trDiffWidth = img.height/2;
+        trDiffHeight =(img.width)/2;
         miniC.width = img.height;
         miniC.height = img.width;
 
     }else{
-        var imgDiffWidth = -(img.width)/2;
-        var imgDiffHeight = -(img.height)/2;
-        var trDiffWidth = (img.width)/2;
-        var trDiffHeight =(img.height)/2;
+        imgDiffWidth = -(img.width)/2;
+        imgDiffHeight = -(img.height)/2;
+        trDiffWidth = (img.width)/2;
+        trDiffHeight =(img.height)/2;
         miniC.width =  img.width;
         miniC.height = img.height;
 
     }
 
-    miniCtx.clearRect(0,0,canvas.width,canvas.height);
+    miniCtx.clearRect(0, 0, miniC.width, miniC.height);
     miniCtx.save();
     miniCtx.translate(trDiffWidth,trDiffHeight);
     miniCtx.rotate(valueD*Math.PI/180);
@@ -574,7 +652,7 @@ function flip() {
 }
 
 function saturate() {
-    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var imageData = ctx.getImageData(0, 0, c.width, c.height);
     var dataArray = imageData.data;
 
     for (var i = 0; i < dataArray.length; i += 4) {
@@ -595,28 +673,32 @@ function saturate() {
 }
 
 function bluer() {
-    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var imageData = ctx.getImageData(0, 0, c.width, c.height);
     var dataArray = imageData.data;
     ctx.globalAlpha = 0.1;
 
-    for (var y=0;y<50;++y) ctx.drawImage(img,y,y,img.naturalWidth, img.naturalHeight);
+    for (var y = 0; y < 50; ++y) ctx.drawImage(img, y, y, img.naturalWidth, img.naturalHeight);
     $('#img').attr('src',c.toDataURL('image/jpeg'));
 
 
-    for (var y=0;y>-50;--y) ctx.drawImage(img,y,y,img.naturalWidth, img.naturalHeight);
+    for (var y2 = 0; y2 > -50; --y2) ctx.drawImage(img, y2, y2, img.naturalWidth, img.naturalHeight);
     $('#previw').attr('src',c.toDataURL('image/jpeg'));
     save();
 
 }
 
 function grayscale() {
-    var imageData = ctx.getImageData(0,0,canvas.width, canvas.height);
+    var imageData = ctx.getImageData(0, 0, c.width, c.height);
     var data = imageData.data;
-    for (var i = 0; i < data.length; i += 4) {
-        var avg = (data[i] + data[i +1] + data[i +2]) / 3;
-        data[i]     = avg; // red
-        data[i + 1] = avg; // green
-        data[i + 2] = avg; // blue
+    if (window.Filters && typeof window.Filters.grayscalePixels === "function") {
+        window.Filters.grayscalePixels(data);
+    } else {
+        for (var i = 0; i < data.length; i += 4) {
+            var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            data[i] = avg; // red
+            data[i + 1] = avg; // green
+            data[i + 2] = avg; // blue
+        }
     }
     ctx.putImageData(imageData, 0, 0);
     $('#previw').attr('src',c.toDataURL('image/jpeg'));
@@ -625,12 +707,16 @@ function grayscale() {
 };
 
 function invert() {
-    var imageData = ctx.getImageData(0,0,canvas.width, canvas.height);
+    var imageData = ctx.getImageData(0, 0, c.width, c.height);
     var data = imageData.data;
-    for (var i = 0; i < data.length; i += 4) {
-        data[i]     = 255 - data[i];     // red
-        data[i + 1] = 255 - data[i + 1]; // green
-        data[i + 2] = 255 - data[i + 2]; // blue
+    if (window.Filters && typeof window.Filters.invertPixels === "function") {
+        window.Filters.invertPixels(data);
+    } else {
+        for (var i = 0; i < data.length; i += 4) {
+            data[i] = 255 - data[i]; // red
+            data[i + 1] = 255 - data[i + 1]; // green
+            data[i + 2] = 255 - data[i + 2]; // blue
+        }
     }
     ctx.putImageData(imageData, 0, 0);
     $('#previw').attr('src',c.toDataURL('image/jpeg'));
@@ -638,7 +724,7 @@ function invert() {
 };
 
 function showValue(newValue) {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, c.width, c.height);
     var imgDiffWidth = img.naturalWidth;
     var imgDiffHeight = img.naturalHeight;
 
@@ -666,7 +752,7 @@ function miniShowValue(newValue) {miniCtx.clearRect(0,0,miniC.width,miniC.height
 }
 
 function scale(newValue) {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, c.width, c.height);
     var imgDiffWidth = img.naturalWidth;
     var imgDiffHeight = img.naturalHeight;
     ctx.save();
@@ -686,7 +772,7 @@ function changeColorValue(sobj, val) {
 
 function brightness(amount) {
     // ctx.drawImage(img, 0,0, img.naturalWidth, img.naturalHeight);
-    var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+    var data = ctx.getImageData(0, 0, c.width, c.height);//get pixel data
     var pixels = data.data;
     for (var i = 0; i < pixels.length; i+=4) {//loop through all data
         pixels[i] += amount;
@@ -703,7 +789,7 @@ function brightness(amount) {
 function brightnessScroll(amount) {
     var a = parseInt(amount);
     ctx.drawImage(img, 0,0, img.naturalWidth, img.naturalHeight);
-    var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+    var data = ctx.getImageData(0, 0, c.width, c.height);//get pixel data
     var pixels = data.data;
 
     for (var i = 0; i < pixels.length; i+=4) {//loop through all data
@@ -723,7 +809,7 @@ function contrastScroll(amount) {
 
     var a = parseInt(amount);
 
-    var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+    var data = ctx.getImageData(0, 0, c.width, c.height);//get pixel data
     var pixels = data.data;
     for (var i = 0; i < pixels.length; i+=4) {//loop through all data
         var brightness = (pixels[i]+pixels[i+1]+pixels[i+2])/3; //get the brightness
@@ -738,7 +824,7 @@ function contrastScroll(amount) {
 }
 
 function contrast(amount) {
-    var data = ctx.getImageData(0,0,canvas.width,canvas.height);//get pixel data
+    var data = ctx.getImageData(0, 0, c.width, c.height);//get pixel data
     var pixels = data.data;
     for(var i = 0; i < pixels.length; i+=4) {//loop through all data
 

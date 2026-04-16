@@ -24,6 +24,46 @@ button .fa, input[type=button] .fa{
     display: block;
     color:#6b6b6b;
 }
+
+/* Compact icon-only controls inside the edit panel */
+.edit .icon-btn {
+    background: #e5e2e2;
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 4px;
+    line-height: 1;
+}
+.edit .icon-btn .fa {
+    font-size: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    color: #6b6b6b;
+}
+.edit .icon-btn:hover .fa {
+    color: #00baff;
+}
+.edit-top-actions {
+    margin-bottom: 8px;
+}
+.edit-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0 12px;
+}
+.edit-tab.active {
+    background: #cfefff;
+}
+.edit-tab.active .fa {
+    color: #00baff;
+}
+.edit-panel {
+    display: none;
+    margin-bottom: 10px;
+}
+.edit-panel button {
+    margin: 0 4px;
+}
 button[name=Save]{
     background: green;
     border: medium none;
@@ -51,6 +91,7 @@ button[name=Save] .fa{
 /* Webkit Browsers*/
 input[type=range]{
     -webkit-appearance: none;
+    appearance: none;
 }
 
 input[type=range]::-webkit-slider-runnable-track {

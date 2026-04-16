@@ -1,8 +1,7 @@
 <html>
 <head>
-    <link href="./jquery-ui/jquery-ui.css" type="text/css" rel="stylesheet/less">
     <link rel="stylesheet" type="text/css"
-href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="./cropper.css">
 
@@ -18,34 +17,70 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
 <input type="file" id="input"></input>
 <div class="maine-box">
   <section class="menu memo">
-    <button onclick="openCropper()"><i class="fa fa-crop"></i>Croper</button>
+    <button onclick="openCropper()"><i class="fa fa-crop"></i>Cropper</button>
     <button onclick="openRotate()"> <i class="fa fa-undo"></i>Rotate</button>
     <button onclick="openEdit()"><i class="fa fa-eyedropper"></i>Edit</button>
     <button onclick="openResize()"><i class="fa fa-arrows-alt"></i>Resize</button>
-    <button onclick="openSharpe()"><i class="fa fa-diamond"></i>Sharpnes</button>
+    <button onclick="openSharpe()"><i class="fa fa-diamond"></i>Sharpness</button>
+    <button onclick="saveToMachine()"><i class="fa fa-download"></i>Save</button>
 
 
   </section>
   <div class='edit memo'>
-      <button type="button" onclick="backe()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
-      <!-- <button onclick="brightness(10)"><i class="fa fa-adjust"></i>Lighter</button> -->
-      <button class="btn-gr" onclick="openBr()">Brigtness</button>
-      <button class="btn-gr" onclick="openCont()">Contrast</button>
+      <div class="edit-top-actions">
+        <button type="button" onclick="back()" name="Save" class="icon-btn" title="Back" aria-label="Back">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <button type="button" onclick="save()" name="Save" class="icon-btn" title="Save changes" aria-label="Save changes">
+          <i class="fa fa-floppy-o"></i>
+        </button>
+      </div>
 
-       <input type="button" onclick="brightness(10)" value="Lighter" />
-       <button onclick="brightness(-10)"><i class="fa fa-adjust"></i>Darker</button>
-       <input type="button" onclick="brightness(-10)" value="Darker" />
-       <button onclick="contrast(10)"><i class="fa fa-moon-o"></i>More</button>
-        <input type="button" onclick="contrast(10)" value="More" />
+      <div class="edit-tabs">
+        <button id="edit-tab-brightness" class="icon-btn edit-tab" onclick="openBr()" title="Brightness tools" aria-label="Brightness tools">
+          <i class="fa fa-sun-o"></i>
+        </button>
+        <button id="edit-tab-contrast" class="icon-btn edit-tab" onclick="openCont()" title="Contrast tools" aria-label="Contrast tools">
+          <i class="fa fa-adjust"></i>
+        </button>
+        <button id="edit-tab-effects" class="icon-btn edit-tab" onclick="openEffects()" title="Effects tools" aria-label="Effects tools">
+          <i class="fa fa-magic"></i>
+        </button>
+      </div>
 
-       <button onclick="contrast(-10)"><i class="fa fa-sun-o"></i>Less</button>
-       <input type="button" onclick="contrast(-10)" value="Less" />
-      <button class="btn-gr" onclick="grayscale()">Grayscale the image</button>
-      <button class="btn-gr" onclick="invert()">Invert image</button>
-      <button class="btn-gr" onclick="saturate()">saturate image</button>
-      <button class="btn-gr" onclick="bluer()">bluer image</button>
+      <div class="edit-panel edit-panel-brightness">
+        <button type="button" onclick="brightness(-10)" class="icon-btn" title="Brightness -10" aria-label="Decrease brightness">
+          <i class="fa fa-minus"></i>
+        </button>
+        <button type="button" onclick="brightness(10)" class="icon-btn" title="Brightness +10" aria-label="Increase brightness">
+          <i class="fa fa-plus"></i>
+        </button>
+      </div>
 
-      <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
+      <div class="edit-panel edit-panel-contrast">
+        <button type="button" onclick="contrast(-10)" class="icon-btn" title="Contrast -10" aria-label="Decrease contrast">
+          <i class="fa fa-minus-square"></i>
+        </button>
+        <button type="button" onclick="contrast(10)" class="icon-btn" title="Contrast +10" aria-label="Increase contrast">
+          <i class="fa fa-plus-square"></i>
+        </button>
+      </div>
+
+      <div class="edit-panel edit-panel-effects">
+        <button class="btn-gr icon-btn" onclick="grayscale()" title="Grayscale" aria-label="Grayscale">
+          <i class="fa fa-picture-o"></i>
+        </button>
+        <button class="btn-gr icon-btn" onclick="invert()" title="Invert" aria-label="Invert">
+          <i class="fa fa-exchange"></i>
+        </button>
+        <button class="btn-gr icon-btn" onclick="saturate()" title="Saturate" aria-label="Saturate">
+          <i class="fa fa-tint"></i>
+        </button>
+        <button class="btn-gr icon-btn" onclick="bluer()" title="Blur" aria-label="Blur">
+          <i class="fa fa-circle-o-notch"></i>
+        </button>
+      </div>
+
       <div class="br-scroll">
         <input type="range" min="-100" max="100" value="0" step="10" onchange=" brightnessScroll(this.value)" />
 
@@ -56,7 +91,7 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
       </div>
   </div>
   <div class='sharp memo'>
-        <button type="button" onclick="backe()" name="Save"><i class="fa fa-floppy-o"></i>Backe</button>
+        <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
         <input type=range id=mix min=0 max=100 value=00 onchange="update(this.value)">
         <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
   </div>
@@ -65,8 +100,8 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
 
   </div>
   <div class="memo">
-    <button type="button" class="crop" onclick="backe()" name="Save"><i class="fa fa-floppy-o"></i>Backe</button>
-    <button class='crop btn-gr' onclick="canvasdraw()"> Cropp</button>
+    <button type="button" class="crop" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
+    <button class='crop btn-gr' onclick="canvasdraw()"> Crop</button>
         <button class='crop ' onclick="freeAsp()"> <span class="box free-asp"></span>Free Aspect ratio</button>
         <button class='crop ' onclick="oneAsp()"> <span class="box"></span>1:1</button>
     <button class='crop ' onclick="camAsp()"><span class="box for-asp"></span> 4:3</button>
@@ -77,7 +112,7 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
     <button type="button" onclick="save()" name="Save" class="crop"><i class="fa fa-floppy-o"></i>Save</button>
   </div>
     <div class='rotate memo'>
-        <button type="button" onclick="backe()" name="Save"><i class="fa fa-floppy-o"></i>Backe</button>
+        <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
         <button class="btn-gr" onclick="rotate()">rotate canvas</button>
         <button class="btn-gr" onclick="flip()">flip canvas</button>
         <button class="btn-gr" onclick="openRT()">rotate canvas</button>
@@ -85,13 +120,13 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
 
   </div>
   <div class="memo rt-scroll">
-    <button type="button" onclick="backe()" name="Save"><i class="fa fa-floppy-o"></i>Backe</button>
+    <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
   <span>Rotate</span>
     <input type="range" min="0" max="180" value="0" step="1" oninput="miniShowValue(this.value)" onchange="showValue(this.value)" />
           <button type="button" onclick="save()" name="Save"><i class="fa fa-floppy-o"></i>Save</button>
 </div>
   <div class='resize memo'>
-    <button type="button" onclick="backe()" name="Save"><i class="fa fa-floppy-o"></i>Backe</button>
+    <button type="button" onclick="back()" name="Save"><i class="fa fa-floppy-o"></i>Back</button>
 
     <input type="number" id="widthinput"  onchange="resize(this.value)" />
     <input type="number"   id="heightinput"  onchange="resize(this.value)" />
@@ -111,18 +146,19 @@ href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.
 <div class="memo">
   <button type="button" onclick="roleBack()"><i class="fa fa-reply"></i></button>
   <button type="button" onclick="roleFront()" ><i class="fa fa-share"></i></button>
-  <button type="button" class="show-init" onclick="showInit()" >Show initial imag</button>
+  <button type="button" class="show-init" onclick="showInit()" >Show initial image</button>
   <button type="button" class="hide-init" onclick="hideInit()" >hide initial image</button>
 </div>
 <div class="canvasDiv">
-  <canvas width="800"  style="visibility:hiden;"height="400" id="canvas"></canvas>
+  <canvas width="800" style="visibility:hidden;" height="400" id="canvas"></canvas>
 
 </div>
 
 
 
 </div>
-<script type="text/javascript"src="cropper.js"></script>
+<script type="text/javascript" src="filters.js"></script>
+<script type="text/javascript" src="cropper.js"></script>
 
 
 </body>
